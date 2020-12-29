@@ -49,6 +49,8 @@ for cron definition, the label value is a `_` (underscore) separate list of time
 
 For example to schedule an instance to run between 06:30 and 18:00 every working day, one would define `0630_workday` as the start schedule and `1800_workday` or `18_workday` as the stop schedule.
 
+If you are not familiar with cron scheduler syntax, please see https://en.wikipedia.org/wiki/Cron
+
 ## Code
 
 ## Example
