@@ -29,7 +29,7 @@ Two optional environment variables are available, `scheduler_start_label` and `s
 for cron definition, the label value is a `_` (underscore) separate list of time and date values.
 
 `HHMM` defines a specific hour:minute, e.g. `0830` defines 08:30 in the morning and `2145` defined 21:45 in the evening.  
-`HH` defines a specific start of hour, e.g. `06` defines 06:0
+`HH` defines a specific start of hour, e.g. `06` defines 06:00.
 
 `monfri` or `workday` defines weekdays from Monday to Friday (1-5).  
 `satsun` or `weekend` defines weekend, Saturday and Sunday (0,6).
