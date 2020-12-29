@@ -16,30 +16,30 @@ import (
 )
 
 func main() {
-	log.Print("starting server...")
 	http.HandleFunc("/", handler)
 
-	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		log.Printf("defaulting to port %s", port)
 	}
 
-	// Start HTTP server.
-	log.Printf("listening on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	verbose := false
 	projectList := os.Getenv("scheduler_projects")
 	zonePrefixList := os.Getenv("scheduler_zones")
 
 	if projectList == "" || zonePrefixList == "" {
 		fmt.Printf("Define scheduler_projects and scheduler_zones environment variables")
 		os.Exit(1)
+	}
+
+	if os.Getenv("verbose") != "" {
+		verbose = true
 	}
 
 	startLabel := os.Getenv("scheduler_start_label")
@@ -58,54 +58,71 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, projectId := range strings.Split(projectList, ",") {
-		fmt.Printf("Project: %s\n", projectId)
+		if verbose {
+			fmt.Printf("project=%s\n", projectId)
+		}
 		allZones, err := service.Zones.List(projectId).Do()
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		currentTime := time.Now().Local()
-		fmt.Printf("Current: %v (%s)\n", currentTime, currentTime.Location().String())
+		if verbose {
+			fmt.Printf("current_time=%v current_time_zone=%s\n", currentTime, currentTime.Location().String())
+		}
 
 		for _, zone := range allZones.Items {
 			for _, zonePrefix := range strings.Split(zonePrefixList, ",") {
 				if strings.HasPrefix(zone.Name, zonePrefix) {
-					//fmt.Printf("  %+v\n", zone.Name)
 					i, _ := service.Instances.List(projectId, zone.Name).Do()
 					startTime := time.Now()
 					stopTime := time.Now()
 					for _, p := range i.Items {
-						fmt.Printf("  %s %s %+v\n", zone.Name, p.Description, p.Labels)
+						if verbose {
+							fmt.Printf("zone=%s instance=%s labels=%+v\n", zone.Name, p.Description, p.Labels)
+						}
 						if val, ok := p.Labels[startLabel]; ok {
 							s := parseSchedule(val)
-							fmt.Printf("crontab: %s\n", s)
+							if verbose {
+								fmt.Printf("crontab=%s\n", s)
+							}
 							c := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
 							startSchedule, err := c.Parse("TZ=" + currentTime.Location().String() + " " + s)
 							if err != nil {
 								log.Fatal(err)
 							}
-							fmt.Printf("%v\n", startSchedule.Next(time.Now().Local()))
 							startTime = startSchedule.Next(time.Now()).Local()
+							if verbose {
+								fmt.Printf("next_schedule=%v\n", startTime)
+							}
 						}
 						if val, ok := p.Labels[endLabel]; ok {
 							s := parseSchedule(val)
-							fmt.Printf("crontab: %s\n", s)
+							if verbose {
+								fmt.Printf("crontab=%s\n", s)
+							}
 							c := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
 							stopSchedule, err := c.Parse("TZ=" + currentTime.Location().String() + " " + s)
 							if err != nil {
 								log.Fatal(err)
 							}
-							fmt.Printf("%v\n", stopSchedule.Next(time.Now().Local()))
 							stopTime = stopSchedule.Next(time.Now()).Local()
+							if verbose {
+								fmt.Printf("next_schedule=%v\n", stopTime)
+							}
 						}
 						if startTime != stopTime {
 							if startTime.After(stopTime) && currentTime.Before(stopTime) && p.Status != "RUNNING" {
 								s, err := service.Instances.Start(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
-								fmt.Printf("    START %+v %+v\nn", s, err)
+								if verbose {
+									fmt.Printf("    START %+v %+v\nn", s, err)
+								}
 							}
 							if stopTime.After(startTime) && currentTime.Before(startTime) && p.Status == "RUNNING" {
 								s, err := service.Instances.Stop(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
-								fmt.Printf("    STOP %+v %+v\nn", s, err)
+								if verbose {
+									fmt.Printf("    STOP %+v %+v\nn", s, err)
+								}
 							}
 						}
 					}

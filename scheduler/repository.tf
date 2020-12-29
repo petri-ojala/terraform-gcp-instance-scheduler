@@ -23,6 +23,10 @@ resource "google_artifact_registry_repository" "repo" {
   depends_on = [google_project_service.repo]
 }
 
+output "repository_url" {
+  value = "${var.gcp.region}-docker.pkg.dev/${var.gcp.project}/${var.repository.id}"
+}
+
 #
 # GCP provider
 
