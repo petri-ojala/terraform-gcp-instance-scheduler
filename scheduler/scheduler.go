@@ -113,15 +113,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 						}
 						if startTime != stopTime {
 							if startTime.After(stopTime) && currentTime.Before(stopTime) && p.Status != "RUNNING" {
-								s, err := service.Instances.Start(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
-								if verbose {
-									fmt.Printf("    START %+v %+v\nn", s, err)
+								// if verbose {
+								fmt.Printf("start instance %s (%s)\n", p.Description, zone.Name)
+								// }
+								_, err := service.Instances.Start(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
+								if err != nil {
+									fmt.Printf("err: %v\n", err)
 								}
 							}
 							if stopTime.After(startTime) && currentTime.Before(startTime) && p.Status == "RUNNING" {
-								s, err := service.Instances.Stop(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
-								if verbose {
-									fmt.Printf("    STOP %+v %+v\nn", s, err)
+								// if verbose {
+								fmt.Printf("stop instance %s (%s)\n", p.Description, zone.Name)
+								// }
+								_, err := service.Instances.Stop(projectId, zone.Name, strconv.FormatUint(p.Id, 10)).Do()
+								if err != nil {
+									fmt.Printf("err: %v\n", err)
 								}
 							}
 						}
