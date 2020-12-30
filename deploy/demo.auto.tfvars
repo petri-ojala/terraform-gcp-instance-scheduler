@@ -22,7 +22,7 @@ scheduler = {
   env = {
     scheduler_projects = "pojala-gcp-playground"
     scheduler_zones    = "europe"
-    verbose            = "true"
+#    verbose            = "true"
   }
   #
   # We don't need to scale (cost control)
@@ -51,7 +51,7 @@ scheduler = {
   scheduler = {
     "name"             = "instance-scheduler"
     "description"      = "Instance Scheduler"
-    "schedule"         = "* 1 * * *"
+    "schedule"         = "*/10 * * * *"
     "time_zone"        = "Europe/Helsinki"
     "attempt_deadline" = "320s"
   }
