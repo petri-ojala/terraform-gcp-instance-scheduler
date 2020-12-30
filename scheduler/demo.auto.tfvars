@@ -6,7 +6,7 @@
 
 gcp = {
   project          = "pojala-gcp-playground"
-  region           = "europe-west1"
+  region           = "europe-west3"
   credentials_file = "./pojala-gcp-playground.json"
 }
 
