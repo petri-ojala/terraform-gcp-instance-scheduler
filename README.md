@@ -426,36 +426,19 @@ url = "https://gcp-instance-scheduler-omer5z3qza-ey.a.run.app"
 If `verbose` option is enabled for the container, it will show details for instances and schedules.  If verbose is not enabled, only instance start/stop actions are being logged.  You can see the logs in GCP Console, or using `gcloud logging` command, e.g.
 
 ```bash
-$ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=gcp-instance-scheduler" --project pojala-gcp-playground --format 'value(timestamp, textPayload)' --limit 20
-2020-12-30T09:54:22.216393Z
-2020-12-30T09:54:21.207639Z	next_schedule=2020-12-30 18:00:00 +0000 UTC
-2020-12-30T09:54:21.207634Z	crontab=0 18 * * *
-2020-12-30T09:54:21.207628Z	next_schedule=2020-12-30 12:00:00 +0000 UTC
-2020-12-30T09:54:21.207611Z	crontab=0 12 * * *
-2020-12-30T09:54:21.207605Z	zone=europe-north1-a instance=linux-vm-2 labels=map[install_nginx: install_stackdriver: schedule_end:hour18 schedule_start:hour12]
-2020-12-30T09:54:21.207598Z	next_schedule=2020-12-30 16:00:00 +0000 UTC
-2020-12-30T09:54:21.207592Z	crontab=0 16 * * *
-2020-12-30T09:54:21.207584Z	next_schedule=2020-12-31 06:00:00 +0000 UTC
-2020-12-30T09:54:21.207553Z	crontab=0 06 * * *
-2020-12-30T09:54:21.207528Z	zone=europe-north1-a instance=linux-vm-1 labels=map[install_nginx: install_stackdriver: schedule_end:hour16 schedule_start:hour06]
-2020-12-30T09:54:18.665872Z	current_time=2020-12-30 09:54:18.665743442 +0000 UTC current_time_zone=UTC
-2020-12-30T09:54:18.344680Z	project=pojala-gcp-playground
-2020-12-30T09:53:11.383074Z
-2020-12-30T09:53:09.867165Z	stop instance linux-vm-2 (europe-north1-a)
-2020-12-30T09:53:09.867159Z	next_schedule=2020-12-30 18:00:00 +0000 UTC
-2020-12-30T09:53:09.867154Z	crontab=0 18 * * *
-2020-12-30T09:53:09.867141Z	next_schedule=2020-12-30 12:00:00 +0000 UTC
-2020-12-30T09:53:09.867134Z	crontab=0 12 * * *
-2020-12-30T09:53:09.867124Z	zone=europe-north1-a instance=linux-vm-2 labels=map[install_nginx: install_stackdriver: schedule_end:hour18 schedule_start:hour12]
-2020-12-30T09:53:09.867105Z	next_schedule=2020-12-30 16:00:00 +0000 UTC
-2020-12-30T09:53:09.867060Z	crontab=0 16 * * *
-2020-12-30T09:53:09.867045Z	next_schedule=2020-12-31 06:00:00 +0000 UTC
-2020-12-30T09:53:09.867003Z	crontab=0 06 * * *
-2020-12-30T09:53:09.866919Z	zone=europe-north1-a instance=linux-vm-1 labels=map[install_nginx: install_stackdriver: schedule_end:hour16 schedule_start:hour06]
-2020-12-30T09:53:07.289515Z	current_time=2020-12-30 09:53:07.289138393 +0000 UTC current_time_zone=UTC
-2020-12-30T09:53:06.749025Z	project=pojala-gcp-playground
+$ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=gcp-instance-scheduler" --project pojala-gcp-playground --format 'value(timestamp, textPayload)'  --limit 100 --freshness=14d | egrep -v 'Z\s+$'
+2021-01-05T06:00:02.882327Z	start instance linux-vm-1 (europe-north1-a)
+2021-01-04T17:00:03.081163Z	stop instance linux-vm-1 (europe-north1-a)
+2021-01-04T06:00:03.492913Z	start instance linux-vm-1 (europe-north1-a)
+2021-01-01T17:00:03.686619Z	stop instance linux-vm-1 (europe-north1-a)
+2021-01-01T06:00:02.814357Z	start instance linux-vm-1 (europe-north1-a)
+2020-12-31T17:00:03.382684Z	stop instance linux-vm-1 (europe-north1-a)
+2020-12-31T06:00:03.303809Z	start instance linux-vm-1 (europe-north1-a)
+2020-12-30T21:00:03.993084Z	stop instance linux-vm-2 (europe-north1-a)
+2020-12-30T20:00:03.838993Z	start instance linux-vm-2 (europe-north1-a)
+2020-12-30T17:00:03.237430Z	stop instance linux-vm-1 (europe-north1-a)
+2020-12-30T11:11:58.385029Z	stop instance linux-vm-2 (europe-north1-a)
 ```
-_(Update with better example..)_
 
 ## Configuration
 
